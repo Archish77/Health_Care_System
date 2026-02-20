@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Heart Health Dashboard</title>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #2c3e50;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --bg: #f8f9fc;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--secondary);
+        }
+
+        
+        nav {
+            background: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+       
+        .prediction-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        input, select {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #d1d3e2;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), #224abe);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover { transform: translateY(-2px); }
+
+        
+        .info-section {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            color: var(--primary);
+            border-bottom: 2px solid #eaecf4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        .info-card {
+            border-left: 4px solid var(--primary);
+            background: #f8f9fc;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .term { font-weight: bold; color: var(--secondary); font-size: 1.1rem; }
+        .meaning { display: block; font-style: italic; color: #858796; margin-bottom: 8px; }
+        .details { font-size: 0.95rem; line-height: 1.5; margin: 0; }
+
+        .badge {
+            display: inline-block;
+            background: #dddfeb;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .healthy { background: #e1f7ef; color: var(--success); }
+        .risk { background: #fceaea; color: var(--danger); }
+
+        /* Mobile Responsive */
+        @media (max-width: 1000px) {
+            .dashboard-container { grid-template-columns: 1fr; }
+            .prediction-card { position: relative; top: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">❤️ Heart Disease Prediction with AI</div>
+</nav>
+
+<div class="dashboard-container">
+    
+    <div class="prediction-card">
+        <h2>Risk Analysis</h2>
+        <p style="color: #858796; font-size: 0.9rem;">Enter clinical data for instant AI prediction.</p>
+
+        <div class="grid">
+            <input id="age" type="number" placeholder="Age">
+            <select id="sex">
+                <option value="">Sex</option>
+                <option value="0">Female</option>
+                <option value="1">Male</option>
+            </select>
+            <select id="cp">
+                <option value="">Chest Pain</option>
+                <option value="0">Typical Angina</option>
+                <option value="1">Atypical Angina</option>
+                <option value="2">Non-anginal</option>
+                <option value="3">Asymptomatic</option>
+            </select>
+            <select id="trestbps">
+                <option value="">Resting BP</option>
+                <option value="0">Normal (< 120)</option>
+                <option value="1">Elevated (120–139)</option>
+                <option value="2">High (≥ 140)</option>
+            </select>
+            <select id="chol">
+                <option value="">Cholesterol</option>
+                <option value="0">Normal (< 200)</option>
+                <option value="1">Borderline (200–239)</option>
+                <option value="2">High (≥ 240)</option>
+            </select>
+            <select id="fbs">
+                <option value="">Fasting Sugar</option>
+                <option value="0">Normal (≤ 120)</option>
+                <option value="1">High (> 120)</option>
+            </select>
+            <select id="restecg">
+                <option value="">Resting ECG</option>
+                <option value="0">Normal</option>
+                <option value="1">ST-T Abnormality</option>
+                <option value="2">LVH</option>
+            </select>
+            <select id="thalach">
+                <option value="">Max Heart Rate</option>
+                <option value="0">Good (≥ 150)</option>
+                <option value="1">Concern (120–149)</option>
+                <option value="2">Low (< 120)</option>
+            </select>
+            <select id="exang">
+                <option value="">Exercise Angina</option>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+            <select id="oldpeak">
+                <option value="">ST Depression</option>
+                <option value="0">Normal (< 1.0)</option>
+                <option value="1">Risky (1.0–2.5)</option>
+                <option value="2">High Risk (> 2.5)</option>
+            </select>
+            <select id="slope">
+                <option value="">ST Slope</option>
+                <option value="0">Upsloping</option>
+                <option value="1">Flat</option>
+                <option value="2">Downsloping</option>
+            </select>
+            <select id="ca">
+                <option value="">Major Vessels</option>
+                <option value="0">0 Vessels</option>
+                <option value="1">1 Vessel</option>
+                <option value="2">2 Vessels</option>
+                <option value="3">3 Vessels</option>
+            </select>
+            <select id="thal" style="grid-column: span 2;">
+                <option value="">Thalassemia Status</option>
+                <option value="1">Normal</option>
+                <option value="2">Fixed Defect</option>
+                <option value="3">Reversible Defect</option>
+            </select>
+        </div>
+
+        <button onclick="predict()">Run AI Diagnostics</button>
+        <div id="result"></div>
+    </div>
+
+    <div class="info-section">
+        <h1>Understanding the Parameters</h1>
+        <p>This guide explains the clinical metrics used by our algorithm to evaluate cardiovascular health.</p>
+
+        <h3 class="section-title">Symptoms & Physical Indicators</h3>
+        <div class="info-card">
+            <span class="term">Chest Pain Type</span>
+            <span class="meaning">Clinical category of chest discomfort.</span>
+            <p class="details">Angina is chest pain caused by reduced blood flow to the heart. Typical Angina follows a pattern (effort-based), while Atypical does not. Non-anginal pain is chest pain not related to the heart, and Asymptomatic means no pain is felt despite underlying issues.</p>
+        </div>
+
+        <div class="info-card">
+            <span class="term">Exercise Induced Angina </span>
+            <span class="meaning">Pain triggered by physical activity.</span>
+            <p class="details">This indicates if a person experiences chest pain specifically when the heart is working harder (like walking uphill,gyming,running,walking,etc). It is a key indicator of coronary artery narrowing.</p>
+        </div>
+
+        <h3 class="section-title">Laboratory Results</h3>
+        <div class="info-card">
+            <span class="term">Cholestoral</span>
+            <span class="meaning">Amount of cholesterol in the blood.</span>
+            <p class="details">Cholesterol is a waxy substance found in your blood. High levels can combine with other substances to form plaque, which sticks to the walls of your arteries (atherosclerosis).</p>
+            <span class="badge">Normal: ≤ 120 mg/dl</span>
+        </div>
+
+        <div class="info-card">
+           <span class="term">Fasting Blood Sugar</span>
+           <span class="meaning">Glucose levels after 8+ hours of fasting.</span>
+           <p class="details">Cholesterol is a waxy substance found in your blood. High levels can combine with other substances to form plaque, which sticks to the walls of your arteries (atherosclerosis).</p>
+           <span class="badge">Normal: ≤ 120 mg/dl</span>
+        </div>
+
+        <h3 class="section-title">Electrical & Stress Tests (ECG)</h3>
+        <div class="info-card">
+          <span class="term">Resting ECG Results</span>
+          <span class="meaning">Electrical activity of the heart at rest.</span>
+          <p class="details">Measures the rhythm and electrical signals. <strong>ST-T wave abnormalities</strong> can suggest lack of oxygen to the heart, while <strong>LVH</strong> suggests the heart muscle has thickened from overwork.</p>
+        </div>
+
+        <div class="info-card">
+          <span class="term">ST Depression</span>
+          <span class="meaning">Stress-induced heart strain.</span>
+          <p class="details">This refers to a specific dip in the ECG line during exercise compared to rest. A larger depression usually indicates a higher risk of coronary heart disease.</p>
+        </div>
+
+        <div class="info-card">
+          <span class="term">Slope of ST Segment</span>
+          <span class="meaning">The "recovery" curve after peak exercise.</span>
+          <p class="details">Describes the slope of the heart's recovery. An <strong>upsloping</strong> line is generally healthy, while a <strong>flat</strong> or <strong>downsloping</strong> line can be a sign of restricted blood flow.</p>
+        </div>
+
+
+        <h3 class="section-title">Specialized Imaging</h3>
+
+        <div class="info-card">
+            <span class="term">Major Vessels</span>
+            <span class="meaning">Fluoroscopy results (0-3)</span>
+            <p class="details">Refers to the number of major coronary arteries that are clear and visible. A lower number of visible vessels often indicates narrowing or blockage.</p>
+            <img src ="C:\Users\VICTUS\OneDrive\Desktop\HeartProject\licensed-image.jpg"height=200 width=500>
+        </div>
+
+
+        <div class="info-card">
+            <span class="term">Thalassemia</span>
+            <span class="meaning">Blood flow defect status</span>
+            <p class="details">Indicates if blood flow to the heart is normal, has a permanent "fixed" defect, or a "reversible" defect that only appears under stress.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function predict() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = "Processing data...";
+        
+        fetch("/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                age: document.getElementById('age').value,
+                sex: document.getElementById('sex').value,
+                cp: document.getElementById('cp').value,
+                trestbps: document.getElementById('trestbps').value,
+                chol: document.getElementById('chol').value,
+                fbs: document.getElementById('fbs').value,
+                restecg: document.getElementById('restecg').value,
+                thalach: document.getElementById('thalach').value,
+                exang: document.getElementById('exang').value,
+                oldpeak: document.getElementById('oldpeak').value,
+                slope: document.getElementById('slope').value,
+                ca: document.getElementById('ca').value,
+                thal: document.getElementById('thal').value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.prediction.toLowerCase().includes("no")) {
+                resultDiv.className = "healthy";
+            } else {
+                resultDiv.className = "risk";
+            }
+            resultDiv.innerHTML = `Prediction: ${data.prediction}<br>Confidence: ${data.confidence}%`;
+        })
+        .catch(err => {
+            resultDiv.innerHTML = "Error connecting to server.";
+            console.error(err);
+        });
+    }
+</script>
+
+</body>
+</html>
